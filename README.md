@@ -1,86 +1,139 @@
-# Hypothesis browser extension(s)
+# RabbitTrail Browser Extension
 
-[![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg)][license]
+A Chrome browser extension for the RabbitTrail annotation system, adapted from the Hypothesis browser extension.
 
-[license]: https://github.com/hypothesis/browser-extension/blob/main/LICENSE
+## Quick Start
 
-The Hypothesis browser extensions allow you to annotate web documents using your
-[Hypothesis][service] account.
+### Prerequisites
+- Node.js (version 14+)
+- Chrome/Chromium browser
+- RabbitTrail backend running locally on `http://localhost:5000`
 
-![Screenshot of Hypothesis client](/images/screenshot.png?raw=true)
+### Development Setup
 
-[service]: https://hypothes.is
+1. **Install dependencies:**
+   ```bash
+   make deps
+   ```
 
-## Choose your browser below
+2. **Build the extension:**
+   ```bash
+   make dev
+   ```
 
-| **Chrome**        | **Firefox**        |
-| ----------------- | ------------------ |
-| [![Chrome][0]][1] | [![Firefox][2]][3] |
-| **Now available** | **In development** |
+3. **Load in Chrome:**
+   - Open Chrome and go to `chrome://extensions/`
+   - Enable "Developer mode"
+   - Click "Load unpacked" 
+   - Select the `build/` directory
 
-[0]: /images/google-chrome.ico?raw=true 'Review and install for Chrome'
-[1]: https://chrome.google.com/webstore/detail/hypothesis-web-pdf-annota/bjfhmglciegochdpefhhlphglcehbmek
-[2]: /images/mozilla-firefox.ico?raw=true 'Nearly there...'
-[3]: #not-yet
+4. **Backend Configuration:**
+   The extension is pre-configured for development with `localhost:5000`. No additional configuration needed if your RabbitTrail backend is running on the default port.
 
-## Development
+## Backend Requirements
 
-The code for the extensions is in the `src/` directory, and can be built into a
-browser extension by running:
+Your RabbitTrail backend must implement these endpoints:
 
-    make build
+### Badge API (Required)
+```
+GET /api/badge?uri={encoded_url}
+Response: {"total": number}
+```
+This endpoint is used to display annotation counts in the browser badge.
 
-Once this is done you should be able to load the `build/` directory as an
-unpacked extension.
+### Welcome Page (Optional)
+```
+GET /welcome
+```
+Landing page for new users.
 
-The extension code has a test suite, which you can run using:
+### Authentication
+Authentication is handled by the bundled Hypothesis client. Ensure your backend is compatible with the Hypothesis authentication flow.
 
-    make test
+## Configuration
 
-Note that the browser extensions are for the most part just a wrapper around the
-[Hypothesis client][client]. Depending on what you're interested in working on,
-you may need to check out the client repository too. Once you have checked out and
-built the Hypothesis client, you can use it by running the following command in
-the `browser-extension` repository:
+### Development Settings
+- **File:** `settings/chrome-dev.json`
+- **Service URL:** `http://localhost:5000` (pre-configured)
 
-    yarn link ../client
+### Production Settings
+- **File:** `settings/chrome-prod.json` 
+- **Service URL:** Update to your production backend URL
 
-Where "../client" is the path to your Hypothesis client checkout. After that
-a call to `make build` will use the built client from the client repository.
-Please consult the client's documentation for instructions on building the
-client in a development environment.
+### Staging Settings  
+- **File:** `settings/chrome-staging.json`
+- **Service URL:** Update to your staging backend URL
 
-**Tip**: To **unlink** your dev browser extension from your dev client run
-`yarn unlink hypothesis` in your browser extension directory
-(see the [yarn uninstall docs](https://classic.yarnpkg.com/en/docs/cli/unlink/)).
+## Build Commands
 
-See [Building the extension](docs/building.md) for more information.
+```bash
+make help           # Show available commands
+make deps           # Install dependencies  
+make dev            # Build for development
+make watch          # Build and watch for changes
+make lint           # Run linter
+make test           # Run tests
+make clean          # Clean build artifacts
+```
 
-[client]: https://github.com/hypothesis/client/
+## Extension Features
 
-## Community
+- **Annotation Badge:** Shows annotation count for current page
+- **Sidebar Injection:** Loads annotation interface on compatible pages
+- **PDF Support:** Handles PDF annotation via embedded viewer
+- **Direct Links:** Support for `#annotations:ID` URL fragments
+- **Tab State Management:** Tracks annotation state per browser tab
 
-Join us on Slack for discussion. Please see [our contact
-page](https://web.hypothes.is/contact/) for details of how to register.
+## Removed Features
 
-For help using the extension, please see our [Help pages](https://web.hypothes.is/help/).
+The following Hypothesis features have been removed for RabbitTrail:
+- VitalSource integration
+- LMS (Learning Management System) integration
+- Third-party publisher integrations
 
-If you'd like to contribute to the project, you should consider subscribing to
-the [development mailing list][ml], where we can help you plan your
-contributions.
+## Development Notes
 
-Please note that this project is released with a [Contributor Code of
-Conduct][coc]. By participating in this project you agree to abide by its terms.
+- Extension uses Rollup for bundling with Mustache templates
+- Hypothesis client is pre-bundled from npm package
+- TypeScript source in `src/`, builds to `build/`
+- Tests use Mocha and can be run with `make test`
 
-[ml]: https://groups.google.com/a/list.hypothes.is/forum/#!forum/dev
-[coc]: https://github.com/hypothesis/browser-extension/blob/main/CODE_OF_CONDUCT
+## File Structure
 
-## License
+```
+src/
+├── background/          # Background scripts
+│   ├── extension.ts     # Main extension orchestrator
+│   ├── sidebar-injector.ts # Client injection logic
+│   ├── tab-state.ts     # Tab state management
+│   ├── uri-info.ts      # Badge API communication
+│   └── errors.ts        # Error handling
+├── content/             # Content scripts
+├── options/             # Extension options page
+└── popup/               # Extension popup UI
 
-The Hypothesis browser extensions are released under the [2-Clause BSD
-License][bsd2c], sometimes referred to as the "Simplified BSD License". Some
-third-party components are included. They are subject to their own licenses. All
-of the license information can be found in the included [LICENSE][license] file.
+settings/                # Configuration files
+├── chrome-dev.json      # Development config
+├── chrome-prod.json     # Production config  
+└── chrome-staging.json  # Staging config
 
-[bsd2c]: http://www.opensource.org/licenses/BSD-2-Clause
-[license]: https://github.com/hypothesis/browser-extensions/blob/main/LICENSE
+build/                   # Built extension (created by make)
+```
+
+## Troubleshooting
+
+### Badge not showing annotation counts
+- Ensure RabbitTrail backend is running on `localhost:5000`
+- Check that `/api/badge` endpoint is implemented
+- Verify CORS headers allow extension origin
+
+### Extension not loading on pages
+- Check that pages are not on restricted protocols (`chrome://`, `file://`)
+- Verify extension has necessary permissions
+- Check browser console for error messages
+
+### Client not authenticating
+- Ensure backend authentication endpoints match Hypothesis client expectations
+- Check that CORS is properly configured for authentication flows
+
+For more detailed information, see `DEVELOPMENT.md`.

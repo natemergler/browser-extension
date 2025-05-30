@@ -25,24 +25,7 @@ function createTestFrame() {
   return frame;
 }
 
-// Example of real VitalSource URLs for: 1) The top level frame, 2) The ebook reader frame, where we need
-// to inject the client and 3) the ebook chapter content frame.
-const vitalSourceFrames = {
-  main: {
-    frameId: 1,
-    url: 'https://bookshelf.vitalsource.com/reader/books/9781400847402/epubcfi/6/22[%3Bvnd.vst.idref%3Dch2]!/4',
-  },
-
-  reader: {
-    frameId: 2,
-    url: 'https://jigsaw.vitalsource.com/mosaic/wrapper.html?uuid=789115e7-e6ae-46cb-edcd-b9e68609e590&type=book',
-  },
-
-  content: {
-    frameId: 3,
-    url: 'https://jigsaw.vitalsource.com/books/9781400847402/epub/OEBPS/10.chaptertwo.xhtml?favre=brett',
-  },
-};
+// VitalSource and LMS test data removed for RabbitTrail adaptation
 
 describe('SidebarInjector', () => {
   let injector;
@@ -151,7 +134,7 @@ describe('SidebarInjector', () => {
           if (!permissions.has('webNavigation')) {
             throw new Error('Invalid permissions');
           }
-          return Object.values(vitalSourceFrames);
+          return []; // VitalSource frames removed
         }),
       },
     };
@@ -202,25 +185,7 @@ describe('SidebarInjector', () => {
       assert.isTrue(granted);
     });
 
-    it('returns true for VitalSource URLs if user grants permission', async () => {
-      const granted = await injector.requestExtraPermissionsForTab({
-        id: 1,
-        url: 'https://bookshelf.vitalsource.com/reader/books/9780132119177',
-      });
-      assert.calledWith(fakeChromeAPI.permissions.request, {
-        permissions: ['webNavigation'],
-      });
-      assert.isTrue(granted);
-    });
-
-    it('returns false for VitalSource URLs if user rejects permission', async () => {
-      fakeChromeAPI.permissions.request.resolves(false);
-      const granted = await injector.requestExtraPermissionsForTab({
-        id: 1,
-        url: 'https://bookshelf.vitalsource.com/reader/books/9780132119177',
-      });
-      assert.isFalse(granted);
-    });
+    // VitalSource permission tests removed for RabbitTrail adaptation
   });
 
   describe('.injectIntoTab', () => {
@@ -352,100 +317,7 @@ describe('SidebarInjector', () => {
       });
     });
 
-    describe('when viewing a VitalSource book', () => {
-      const injectClient = () =>
-        injector.injectIntoTab({ id: 1, url: vitalSourceFrames.main.url });
-
-      beforeEach(() => {
-        // Simulate user granting "webNavigation" permission in an earlier call
-        // to `requestExtraPermissionsForTab`, which must be called before
-        // `injectIntoTab`.
-        permissions.add('webNavigation');
-      });
-
-      it('injects client into book viewer frame', async () => {
-        await injectClient();
-
-        assert.calledWith(
-          fakeExecuteFunction,
-          sinon.match({
-            tabId: 1,
-            frameId: vitalSourceFrames.reader.frameId,
-            func: { name: 'setClientConfig' },
-            args: [sinon.match.any, 'hypothesisId'],
-          }),
-        );
-
-        assert.calledWith(fakeExecuteScript, {
-          tabId: 1,
-          frameId: vitalSourceFrames.reader.frameId,
-          file: '/client/build/boot.js',
-        });
-      });
-
-      it('rejects if extension does not have "webNavigation" permission', async () => {
-        permissions.delete('webNavigation');
-
-        let error;
-        try {
-          await injectClient();
-        } catch (e) {
-          error = e;
-        }
-
-        assert.instanceOf(error, Error);
-        assert.equal(
-          error.message,
-          'The extension was not granted required permissions',
-        );
-      });
-
-      it('rejects if frames cannot be enumerated', async () => {
-        fakeChromeAPI.webNavigation.getAllFrames.returns(null);
-
-        let error;
-        try {
-          await injectClient();
-        } catch (e) {
-          error = e;
-        }
-
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, 'Could not list frames in tab');
-      });
-
-      it('rejects if book reader frame cannot be found', async () => {
-        fakeChromeAPI.webNavigation.getAllFrames.resolves([]);
-
-        let error;
-        try {
-          await injectClient();
-        } catch (e) {
-          error = e;
-        }
-
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, 'Book viewer frame not found');
-      });
-    });
-
-    describe('when viewing a LMS assignment on a new window', () => {
-      it("doesn't inject Hypothesis client", async () => {
-        let error;
-
-        try {
-          await injector.injectIntoTab({
-            id: 1,
-            url: 'https://staging-lms.ca.hypothes.is/lti_launches',
-          });
-        } catch (err) {
-          error = err;
-        }
-
-        assert.instanceOf(error, errors.BlockedSiteError);
-        assert.notCalled(fakeExecuteScript);
-      });
-    });
+    // VitalSource and LMS injection tests removed for RabbitTrail adaptation
 
     describe('when viewing a local PDF', () => {
       describe('when file access is enabled', () => {
@@ -557,48 +429,6 @@ describe('SidebarInjector', () => {
       });
     });
 
-    describe('when viewing a VitalSource book', () => {
-      beforeEach(() => {
-        permissions.add('webNavigation');
-      });
-
-      const removeClient = () =>
-        injector.removeFromTab({ id: 1, url: vitalSourceFrames.main.url });
-
-      it('injects a destroy script into the correct frame', async () => {
-        await removeClient();
-
-        assert.calledWith(fakeExecuteScript, {
-          tabId: 1,
-          frameId: vitalSourceFrames.reader.frameId,
-          file: '/unload-client.js',
-        });
-      });
-
-      it('does nothing if the book viewer frame is not found', async () => {
-        fakeChromeAPI.webNavigation.getAllFrames.returns([]);
-
-        await removeClient();
-
-        assert.notCalled(fakeExecuteScript);
-      });
-
-      it('rejects if extension does not have "webNavigation" permission', async () => {
-        permissions.delete('webNavigation');
-
-        let error;
-        try {
-          await removeClient();
-        } catch (e) {
-          error = e;
-        }
-
-        assert.instanceOf(error, Error);
-        assert.equal(
-          error.message,
-          'The extension was not granted required permissions',
-        );
-      });
-    });
+    // VitalSource test section removed for RabbitTrail adaptation
   });
 });
