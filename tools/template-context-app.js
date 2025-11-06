@@ -10,12 +10,17 @@ import * as path from 'node:path';
 
 function appSettings(settings) {
   const result = {};
-  result.apiUrl = settings.apiUrl;
   result.assetRoot = '/client/';
-  result.authDomain = settings.authDomain;
-  result.serviceUrl = settings.serviceUrl;
   result.release = settings.version;
   result.appType = settings.appType || '';
+
+  // Configure the Hypothesis client with service endpoints
+  // See: https://h.readthedocs.io/projects/client/en/latest/publishers/config/#cmdoption-arg-services
+  result.services = [{
+    apiUrl: settings.apiUrl,
+    authority: settings.authDomain,
+    // Optional: grantToken for pre-authenticated requests (not used here for localhost dev)
+  }];
 
   if (settings.sentryPublicDSN) {
     result.raven = {
