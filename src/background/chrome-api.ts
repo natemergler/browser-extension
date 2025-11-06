@@ -54,8 +54,6 @@ export function getChromeAPI(chrome = globalThis.chrome) {
       requestUpdateCheck: chrome.runtime.requestUpdateCheck
         ? chrome.runtime.requestUpdateCheck
         : null,
-
-      setUninstallURL: chrome.runtime.setUninstallURL,
     },
 
     permissions: {

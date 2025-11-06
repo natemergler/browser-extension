@@ -53,11 +53,10 @@
     "tabs"
   ],
 
-  "host_permissions": ["<all_urls>"],
-
-  "optional_permissions": [
-    {{! Used to enumerate frames on certain websites. }}
-    "webNavigation"
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*",
+    "file:///*"
   ],
 
   "background": {
@@ -85,7 +84,11 @@
         "pdfjs/*",
         "pdfjs/web/viewer.html"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+  "file:///*"
+      ]
     }
   ]
 }

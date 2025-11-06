@@ -1,4 +1,5 @@
-import glob from 'glob';
+import { globSync } from 'glob';
+import path from 'node:path';
 import alias from '@rollup/plugin-alias';
 import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
@@ -14,8 +15,12 @@ export const excludeFromCoverage = [
   '**/test-util/**',
 ];
 
+const testEntries = globSync('tests/**/*-test.js').map(file =>
+  file.split(path.sep).join(path.posix.sep),
+);
+
 export default {
-  input: ['tests/bootstrap.js', ...glob.sync('tests/**/*-test.js')],
+  input: ['tests/bootstrap.js', ...testEntries],
   output: {
     file: 'build/tests.bundle.js',
     format: 'es',

@@ -1,4 +1,4 @@
-import { init, uninstallURL, $imports } from '../../src/background';
+import { init, $imports } from '../../src/background';
 
 let extension;
 
@@ -28,7 +28,6 @@ describe('background/index', () => {
         onInstalled: eventListenerStub(),
         onMessageExternal: eventListenerStub(),
         onUpdateAvailable: eventListenerStub(),
-        setUninstallURL: sinon.stub().resolves(),
       },
       management: {
         getSelf: sinon.stub().resolves({ installType: 'normal', id: '1234' }),
@@ -72,10 +71,6 @@ describe('background/index', () => {
         installType: 'normal',
       });
     });
-  });
-
-  it('shows survey to users after extension is uninstalled', () => {
-    assert.calledWith(fakeChromeAPI.runtime.setUninstallURL, uninstallURL);
   });
 
   describe('bouncer (hyp.is) message handling', () => {
