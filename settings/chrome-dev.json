@@ -7,5 +7,6 @@
   "serviceUrl": "http://localhost:3002/",
 
   "browserIsChrome": true,
-  "appType": "chrome-extension"
+  "appType": "chrome-extension",
+  "grantToken": "dev-token"
 }

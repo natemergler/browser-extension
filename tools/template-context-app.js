@@ -20,11 +20,17 @@ function appSettings(settings) {
 
   // Configure the Hypothesis client with service endpoints
   // See: https://h.readthedocs.io/projects/client/en/latest/publishers/config/#cmdoption-arg-services
-  result.services = [{
+  const serviceConfig = {
     apiUrl: settings.apiUrl,
     authority: settings.authDomain,
-    // grantToken is optional - client will use OAuth flow via /api/token
-  }];
+  };
+  
+  // If grantToken is provided, use it to skip OAuth and pre-authorize the client
+  if (settings.grantToken) {
+    serviceConfig.grantToken = settings.grantToken;
+  }
+  
+  result.services = [serviceConfig];
 
   if (settings.sentryPublicDSN) {
     result.raven = {
