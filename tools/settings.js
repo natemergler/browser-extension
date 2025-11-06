@@ -25,9 +25,10 @@ process.stdout.on('error', err => {
  * - If buildType is 'production' and the git state is not clean, throw an error
  * - Set the version number to X.Y.Z.W, where X.Y.Z is the last tagged release
  *   and W is the number of commits since that release.
- * - If the buildType is 'production', set the version name to "Official Build",
+ * - If buildType is 'production', set the version name to "Official Build",
  *   otherwise set it to a string of the form "gXXXXXXX[.dirty]" to reflect the
  *   exact commit and state of the repository.
+ * - If there are no git tags, default to 1.0.0.0
  */
 function getVersion(buildType) {
   const gitInfo = gitDescribeSync();
@@ -36,7 +37,9 @@ function getVersion(buildType) {
     throw new Error('cannot create production build with dirty git state!');
   }
 
-  const version = `${gitInfo.semver}.${gitInfo.distance}`;
+  // Fallback to 1.0.0.0 if no semver tag exists
+  const semver = gitInfo.semver || '1.0.0';
+  const version = `${semver}.${gitInfo.distance || 0}`;
   let versionName = 'Official Build';
 
   if (buildType !== 'production') {
