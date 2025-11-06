@@ -13,13 +13,17 @@ function appSettings(settings) {
   result.assetRoot = '/client/';
   result.release = settings.version;
   result.appType = settings.appType || '';
+  
+  // The client also expects these at the root level for legacy compatibility
+  result.apiUrl = settings.apiUrl;
+  result.authDomain = settings.authDomain;
 
   // Configure the Hypothesis client with service endpoints
   // See: https://h.readthedocs.io/projects/client/en/latest/publishers/config/#cmdoption-arg-services
   result.services = [{
     apiUrl: settings.apiUrl,
     authority: settings.authDomain,
-    // Optional: grantToken for pre-authenticated requests (not used here for localhost dev)
+    // grantToken is optional - client will use OAuth flow via /api/token
   }];
 
   if (settings.sentryPublicDSN) {
