@@ -1,14 +1,14 @@
 {
   "buildType": "staging",
 
-  "apiUrl": "https://staging.hypothes.is/api/",
-  "authDomain": "hypothes.is",
-  "bouncerUrl": "https://staging.hyp.is/",
-  "serviceUrl": "https://staging.hypothes.is/",
+  "apiUrl": "https://staging.rabbittrail.com/api/",
+  "authDomain": "staging.rabbittrail.com",
+  "bouncerUrl": "https://staging.rabbittrail.com/",
+  "serviceUrl": "https://staging.rabbittrail.com/",
 
-  "oauthClientId": "92b42e3c-7793-11e7-8e17-cb2151436a1f",
+  "oauthClientId": "REPLACE_WITH_STAGING_FIREFOX_OAUTH_CLIENT_ID",
 
-  "sentryPublicDSN": "https://934d4f62912b47d8bb03c28ae6670cf8@app.getsentry.com/69811",
+  "sentryPublicDSN": "REPLACE_WITH_SENTRY_DSN",
 
   "browserIsFirefox": true,
   "appType": "firefox-extension"

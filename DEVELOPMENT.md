@@ -55,9 +55,9 @@ You can pass custom configuration to the client during injection:
 ```typescript
 // Example from sidebar-injector.ts
 const config = {
-   apiUrl: 'http://localhost:3002/api',
-   serviceUrl: 'http://localhost:3002/',
-   // Additional client options...
+  apiUrl: 'http://localhost:3002/api',
+  serviceUrl: 'http://localhost:3002/',
+  // Additional client options...
 };
 await injector.injectIntoTab(tab, config);
 ```
@@ -66,17 +66,18 @@ The default development settings in `settings/chrome-dev.json` provide:
 
 ```json
 {
-   "buildType": "dev",
-   "apiUrl": "http://localhost:3002/api",
-   "authDomain": "localhost:3002",
-   "bouncerUrl": "http://localhost:3002/",
-   "serviceUrl": "http://localhost:3002/",
-   "browserIsChrome": true,
-   "appType": "chrome-extension"
+  "buildType": "dev",
+  "apiUrl": "http://localhost:3002/api",
+  "authDomain": "localhost:3002",
+  "bouncerUrl": "http://localhost:3002/",
+  "serviceUrl": "http://localhost:3002/",
+  "browserIsChrome": true,
+  "appType": "chrome-extension"
 }
 ```
 
 **URL Processing:**
+
 - URLs are normalized (fragments removed, encoded)
 - Certain domains are blocked (chrome://, moz-extension://, etc.)
 - The `uri` parameter is URL-encoded
@@ -84,7 +85,7 @@ The default development settings in `settings/chrome-dev.json` provide:
 **Response Format:**
 
 ```json
-{"total": 42}
+{ "total": 42 }
 ```
 
 ### Authentication APIs (Inferred)
@@ -163,7 +164,7 @@ The error handling includes patterns that may need adjustment for RabbitTrail:
 ```json
 {
   "buildType": "dev",
-   "apiUrl": "http://localhost:3002/api",
+  "apiUrl": "http://localhost:3002/api",
   "authDomain": "localhost:3002",
   "bouncerUrl": "http://localhost:3002/",
   "serviceUrl": "http://localhost:3002/",

@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 
 /**
  * Replace placeholders in the client's boot script with real URLs.
@@ -34,6 +35,8 @@ export function renderBootTemplate(src, dest) {
   writeFileSync(dest, bootScript);
 }
 
-const src = process.argv[2];
-const dest = process.argv[3];
-renderBootTemplate(src, dest);
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const src = process.argv[2];
+  const dest = process.argv[3];
+  renderBootTemplate(src, dest);
+}

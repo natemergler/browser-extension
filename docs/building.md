@@ -54,4 +54,4 @@ The watcher performs an initial build and then monitors `src/`, `settings/`, and
 4. Choose **Load unpacked** and select the `build/` folder.
 
 If you are replacing an existing production build, unload the published extension first or use a separate browser profile.
-   You won't know the extension ID yet, and that's OK.
+You won't know the extension ID yet, and that's OK.

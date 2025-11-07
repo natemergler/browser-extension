@@ -13,7 +13,7 @@ function appSettings(settings) {
   result.assetRoot = '/client/';
   result.release = settings.version;
   result.appType = settings.appType || '';
-  
+
   // The client also expects these at the root level for legacy compatibility
   result.apiUrl = settings.apiUrl;
   result.authDomain = settings.authDomain;
@@ -24,12 +24,12 @@ function appSettings(settings) {
     apiUrl: settings.apiUrl,
     authority: settings.authDomain,
   };
-  
+
   // If grantToken is provided, use it to skip OAuth and pre-authorize the client
   if (settings.grantToken) {
     serviceConfig.grantToken = settings.grantToken;
   }
-  
+
   result.services = [serviceConfig];
 
   if (settings.sentryPublicDSN) {
